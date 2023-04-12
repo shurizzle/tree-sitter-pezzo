@@ -28,10 +28,24 @@
           }
         },
         {
-          "type": "TOKEN",
+          "type": "FIELD",
+          "name": "body",
           "content": {
-            "type": "STRING",
-            "value": "{"
+            "type": "SYMBOL",
+            "name": "exec_body"
+          }
+        }
+      ]
+    },
+    "exec_body": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "FIELD",
+          "name": "brace_open",
+          "content": {
+            "type": "SYMBOL",
+            "name": "brace_open"
           }
         },
         {
@@ -42,10 +56,11 @@
           }
         },
         {
-          "type": "TOKEN",
+          "type": "FIELD",
+          "name": "brace_close",
           "content": {
-            "type": "STRING",
-            "value": "}"
+            "type": "SYMBOL",
+            "name": "brace_close"
           }
         }
       ]
@@ -170,6 +185,41 @@
         "value": "="
       }
     },
+    "or": {
+      "type": "TOKEN",
+      "content": {
+        "type": "STRING",
+        "value": "|"
+      }
+    },
+    "paren_open": {
+      "type": "TOKEN",
+      "content": {
+        "type": "STRING",
+        "value": "("
+      }
+    },
+    "paren_close": {
+      "type": "TOKEN",
+      "content": {
+        "type": "STRING",
+        "value": ")"
+      }
+    },
+    "brace_open": {
+      "type": "TOKEN",
+      "content": {
+        "type": "STRING",
+        "value": "{"
+      }
+    },
+    "brace_close": {
+      "type": "TOKEN",
+      "content": {
+        "type": "STRING",
+        "value": "}"
+      }
+    },
     "bool": {
       "type": "CHOICE",
       "members": [
@@ -182,6 +232,14 @@
           "value": "false"
         }
       ]
+    },
+    "user": {
+      "type": "PATTERN",
+      "value": "[A-Za-z_][A-Za-z_0-9]*"
+    },
+    "group": {
+      "type": "PATTERN",
+      "value": "[A-Za-z_][A-Za-z_0-9]*"
     },
     "comment": {
       "type": "TOKEN",
@@ -206,7 +264,7 @@
     },
     {
       "type": "PATTERN",
-      "value": "( |\\t|\\v|\\f)"
+      "value": " |\\t|\\v|\\f"
     },
     {
       "type": "SYMBOL",
