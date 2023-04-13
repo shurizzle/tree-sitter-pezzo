@@ -5,6 +5,66 @@
     "fields": {}
   },
   {
+    "type": "copy_variable",
+    "named": true,
+    "fields": {
+      "name": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "variable_name",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "environment",
+    "named": true,
+    "fields": {
+      "brace_close": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "brace_close",
+            "named": true
+          }
+        ]
+      },
+      "brace_open": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "brace_open",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "copy_variable",
+          "named": true
+        },
+        {
+          "type": "remove_variable",
+          "named": true
+        },
+        {
+          "type": "set_variable",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "exec_body",
     "named": true,
     "fields": {
@@ -195,6 +255,68 @@
     }
   },
   {
+    "type": "remove_variable",
+    "named": true,
+    "fields": {
+      "minus": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "minus",
+            "named": true
+          }
+        ]
+      },
+      "name": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "variable_name",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "set_variable",
+    "named": true,
+    "fields": {
+      "name": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "variable_name",
+            "named": true
+          }
+        ]
+      },
+      "operator": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "assign",
+            "named": true
+          }
+        ]
+      },
+      "value": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "string",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
     "type": "source_file",
     "named": true,
     "fields": {},
@@ -240,6 +362,10 @@
             "named": true
           },
           {
+            "type": "setenv",
+            "named": true
+          },
+          {
             "type": "target",
             "named": true
           },
@@ -268,6 +394,10 @@
             "named": true
           },
           {
+            "type": "environment",
+            "named": true
+          },
+          {
             "type": "origin_expression",
             "named": true
           },
@@ -277,6 +407,37 @@
           },
           {
             "type": "u64",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "string",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "string_expansion",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "string_expansion",
+    "named": true,
+    "fields": {
+      "name": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "variable_name",
             "named": true
           }
         ]
@@ -387,11 +548,32 @@
     }
   },
   {
+    "type": "variable_name",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "\"",
+    "named": false
+  },
+  {
+    "type": "$",
+    "named": false
+  },
+  {
+    "type": "${",
+    "named": false
+  },
+  {
     "type": "(",
     "named": false
   },
   {
     "type": ")",
+    "named": false
+  },
+  {
+    "type": ",",
     "named": false
   },
   {
@@ -427,6 +609,10 @@
     "named": true
   },
   {
+    "type": "minus",
+    "named": true
+  },
+  {
     "type": "or",
     "named": true
   },
@@ -443,6 +629,14 @@
     "named": true
   },
   {
+    "type": "setenv",
+    "named": true
+  },
+  {
+    "type": "str",
+    "named": false
+  },
+  {
     "type": "target",
     "named": true
   },
@@ -457,5 +651,9 @@
   {
     "type": "u64",
     "named": true
+  },
+  {
+    "type": "}",
+    "named": false
   }
 ]

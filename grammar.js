@@ -22,7 +22,8 @@ module.exports = grammar({
           $.keepenv_statement,
           $.origin_statement,
           $.target_statement,
-          $.timeout_statement
+          $.timeout_statement,
+          $.setenv_statement
         ),
         $.statement
       ),
@@ -67,31 +68,94 @@ module.exports = grammar({
         field("end", $.semicolon)
       ),
 
-    askpass: ($) => token("askpass"),
-    keepenv: ($) => token("keepenv"),
-    origin: ($) => token("origin"),
-    target: ($) => token("target"),
-    timeout: ($) => token("timeout"),
+    setenv_statement: ($) =>
+      seq(
+        field("key", $.setenv),
+        field("operator", $.assign),
+        field("value", $.environment),
+        field("end", $.semicolon)
+      ),
 
-    colon: ($) => token(":"),
-    semicolon: ($) => token(";"),
-    assign: ($) => token("="),
-    or: ($) => token("|"),
-    minus: ($) => token("-"),
-    paren_open: ($) => token("("),
-    paren_close: ($) => token(")"),
-    brace_open: ($) => token("{"),
-    brace_close: ($) => token("}"),
+    askpass: () => token("askpass"),
+    keepenv: () => token("keepenv"),
+    origin: () => token("origin"),
+    target: () => token("target"),
+    timeout: () => token("timeout"),
+    setenv: () => token("setenv"),
 
-    bool: ($) => choice("true", "false"),
+    colon: () => token(":"),
+    semicolon: () => token(";"),
+    assign: () => token("="),
+    assign_imm: () => token.immediate("="),
+    or: () => token("|"),
+    minus: () => token("-"),
+    paren_open: () => token("("),
+    paren_close: () => token(")"),
+    brace_open: () => token("{"),
+    brace_close: () => token("}"),
+
+    bool: () => choice("true", "false"),
 
     // generated with https://3widgets.com/
-    u64: ($) =>
+    u64: () =>
       /[0-9]|[1-9][0-9]{1,14}|1000000000000000|10000000000000000|100000000000000000|1000000000000000000|1[0-8]000000000000000000|18[0-4]00000000000000000|184[0-4]0000000000000000|1844[0-6]000000000000000|18446[0-7]00000000000000|184467[0-4]0000000000000|1844674[0-4]000000000000|184467440[0-7]0000000000|1844674407[0-3]000000000|18446744073[0-7]00000000|1844674407370000000[0-9]|18446744073709[0-5]00000|184467440737095[0-5]0000|1844674407370955[0-2]000/,
 
-    user: ($) => /[A-Za-z_][A-Za-z_0-9]*/,
-    group: ($) => /[A-Za-z_][A-Za-z_0-9]*/,
-    variable_name: ($) => /[A-Za-z_][A-Za-z_0-9]*/,
+    user: () => /[A-Za-z_][A-Za-z_0-9]*/,
+    group: () => /[A-Za-z_][A-Za-z_0-9]*/,
+    _variable_name: () => /[A-Za-z_][A-Za-z_0-9]*/,
+    _variable_name_imm: () => token.immediate(/[A-Za-z_][A-Za-z_0-9]*/),
+
+    environment: ($) =>
+      seq(
+        field("brace_open", $.brace_open),
+        repeat(
+          seq(
+            choice($.set_variable, $.remove_variable, $.copy_variable),
+            token(",")
+          )
+        ),
+        choice($.set_variable, $.remove_variable, $.copy_variable),
+        optional(","),
+        field("brace_close", $.brace_close)
+      ),
+
+    copy_variable: ($) =>
+      field("name", alias($._variable_name, $.variable_name)),
+
+    remove_variable: ($) =>
+      seq(
+        field("minus", $.minus),
+        field("name", alias($._variable_name_imm, $.variable_name))
+      ),
+
+    str: () => token.immediate(/(\\[\\"\$]|[^\\"\$])+/),
+
+    string_expansion: ($) =>
+      choice(
+        seq(
+          token.immediate("$"),
+          field("name", alias($._variable_name_imm, $.variable_name))
+        ),
+        seq(
+          token.immediate("${"),
+          field("name", alias($._variable_name_imm, $.variable_name)),
+          token.immediate("}")
+        )
+      ),
+
+    string: ($) =>
+      seq(
+        token.immediate('"'),
+        repeat(choice($.string_expansion, alias($.str, "str"))),
+        token.immediate('"')
+      ),
+
+    set_variable: ($) =>
+      seq(
+        field("name", alias($._variable_name, $.variable_name)),
+        field("operator", alias($.assign_imm, $.assign)),
+        field("value", $.string)
+      ),
 
     target_expression: ($) =>
       choice(alias($.target_match_or, $.or_expression), $.target_match),
@@ -171,6 +235,7 @@ module.exports = grammar({
           )
         )
       ),
+
     user_or: ($) =>
       seq(
         field("left", $.user),
@@ -185,6 +250,6 @@ module.exports = grammar({
         field("right", choice($.group, alias($.group_or, $.or_expression)))
       ),
 
-    comment: ($) => token(prec(-10, /#.*/)),
+    comment: () => token(prec(-10, /#.*/)),
   },
 });
