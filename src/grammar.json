@@ -93,6 +93,10 @@
           {
             "type": "SYMBOL",
             "name": "setenv_statement"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "exe_statement"
           }
         ]
       },
@@ -321,6 +325,43 @@
         }
       ]
     },
+    "exe_statement": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "FIELD",
+          "name": "key",
+          "content": {
+            "type": "SYMBOL",
+            "name": "exe"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "operator",
+          "content": {
+            "type": "SYMBOL",
+            "name": "assign"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "value",
+          "content": {
+            "type": "SYMBOL",
+            "name": "exe_expr"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "end",
+          "content": {
+            "type": "SYMBOL",
+            "name": "semicolon"
+          }
+        }
+      ]
+    },
     "askpass": {
       "type": "TOKEN",
       "content": {
@@ -361,6 +402,13 @@
       "content": {
         "type": "STRING",
         "value": "setenv"
+      }
+    },
+    "exe": {
+      "type": "TOKEN",
+      "content": {
+        "type": "STRING",
+        "value": "exe"
       }
     },
     "colon": {
@@ -468,6 +516,71 @@
         "type": "PATTERN",
         "value": "[A-Za-z_][A-Za-z_0-9]*"
       }
+    },
+    "glob": {
+      "type": "PATTERN",
+      "value": "(\\\\[ \\|;:\\\\]|[^\\x00 \\|;:])+"
+    },
+    "exe_expr": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "glob"
+        },
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "glob_or"
+          },
+          "named": true,
+          "value": "or_expression"
+        }
+      ]
+    },
+    "glob_or": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "FIELD",
+          "name": "left",
+          "content": {
+            "type": "SYMBOL",
+            "name": "glob"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "operator",
+          "content": {
+            "type": "SYMBOL",
+            "name": "or"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "right",
+          "content": {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "glob"
+              },
+              {
+                "type": "ALIAS",
+                "content": {
+                  "type": "SYMBOL",
+                  "name": "glob_or"
+                },
+                "named": true,
+                "value": "or_expression"
+              }
+            ]
+          }
+        }
+      ]
     },
     "environment": {
       "type": "SEQ",

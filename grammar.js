@@ -23,7 +23,8 @@ module.exports = grammar({
           $.origin_statement,
           $.target_statement,
           $.timeout_statement,
-          $.setenv_statement
+          $.setenv_statement,
+          $.exe_statement
         ),
         $.statement
       ),
@@ -76,12 +77,21 @@ module.exports = grammar({
         field("end", $.semicolon)
       ),
 
+    exe_statement: ($) =>
+      seq(
+        field("key", $.exe),
+        field("operator", $.assign),
+        field("value", $.exe_expr),
+        field("end", $.semicolon)
+      ),
+
     askpass: () => token("askpass"),
     keepenv: () => token("keepenv"),
     origin: () => token("origin"),
     target: () => token("target"),
     timeout: () => token("timeout"),
     setenv: () => token("setenv"),
+    exe: () => token("exe"),
 
     colon: () => token(":"),
     semicolon: () => token(";"),
@@ -104,6 +114,16 @@ module.exports = grammar({
     group: () => /[A-Za-z_][A-Za-z_0-9]*/,
     _variable_name: () => /[A-Za-z_][A-Za-z_0-9]*/,
     _variable_name_imm: () => token.immediate(/[A-Za-z_][A-Za-z_0-9]*/),
+    glob: () => /(\\[ \|;:\\]|[^\x00 \|;:])+/,
+
+    exe_expr: ($) => choice($.glob, alias($.glob_or, $.or_expression)),
+
+    glob_or: ($) =>
+      seq(
+        field("left", $.glob),
+        field("operator", $.or),
+        field("right", choice($.glob, alias($.glob_or, $.or_expression)))
+      ),
 
     environment: ($) =>
       seq(
